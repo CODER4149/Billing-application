@@ -1,0 +1,9 @@
+{
+  "revisions": [
+    "0001_initial_schema",
+    "0002_seed_reference_data",
+    "0003_invoice_business_fields",
+    "0004_update_default_terms",
+    "0005_extra_business_fields"
+  ]
+}

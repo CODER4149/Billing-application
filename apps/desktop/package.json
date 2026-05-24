@@ -1,0 +1,69 @@
+{
+  "name": "@borewell/desktop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Borewell ERP Desktop Application",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "pnpm --filter @borewell/database build && pnpm --filter @borewell/core build && concurrently -k \"pnpm --filter @borewell/web dev\" \"pnpm run dev:electron\"",
+    "dev:electron": "wait-on http://localhost:5173 && tsc && electron .",
+    "build": "pnpm run make-icon && pnpm --filter @borewell/web build && tsc && electron-builder",
+    "make-icon": "node scripts/make-icon.mjs",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@borewell/core": "workspace:*",
+    "@borewell/database": "workspace:*",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^11.10.0",
+    "electron-store": "^10.0.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "concurrently": "^9.1.2",
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.33.5",
+    "typescript": "^5.8.3",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.borewell.erp",
+    "productName": "Borewell ERP",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json",
+      "assets/icon.png"
+    ],
+    "extraResources": [
+      {
+        "from": "../../packages/web/dist",
+        "to": "web",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "assets/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false
+    }
+  }
+}

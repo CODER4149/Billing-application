@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+release/
+*.tsbuildinfo
+
+# Electron
+apps/desktop/dist/
+apps/desktop/release/
+
+# Mobile
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/.capacitor/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Database (local dev)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Test
+coverage/
+playwright-report/
+test-results/
+
+# Turbo
+.turbo/

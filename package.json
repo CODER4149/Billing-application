@@ -1,0 +1,27 @@
+{
+  "name": "borewell-erp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline-first Borewell + Billing ERP System",
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "pnpm --filter @borewell/web dev",
+    "dev:desktop": "pnpm --filter @borewell/desktop dev",
+    "build": "turbo build",
+    "build:web": "pnpm --filter @borewell/web build",
+    "build:desktop": "pnpm --filter @borewell/desktop build",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "db:migrate": "pnpm --filter @borewell/database migrate",
+    "db:seed": "pnpm --filter @borewell/database seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@borewell/core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "import": "./dist/constants.js"
+    },
+    "./gst": {
+      "types": "./dist/services/GstService.d.ts",
+      "import": "./dist/services/GstService.js"
+    },
+    "./amount": {
+      "types": "./dist/utils/amountInWords.d.ts",
+      "import": "./dist/utils/amountInWords.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@borewell/database": "workspace:*",
+    "zod": "^3.25.51"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "typescript": "^5.8.3"
+  }
+}
