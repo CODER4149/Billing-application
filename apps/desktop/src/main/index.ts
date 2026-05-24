@@ -5,6 +5,12 @@ import { fileURLToPath } from "node:url";
 import { ensureAppDirs, getAppPaths, getWebUrl, isDev } from "./paths.js";
 import { BetterSqliteAdapter } from "./database/adapter.js";
 import { initDatabase, registerIpcHandlers } from "./ipc/handlers.js";
+import {
+  attachWindowLogging,
+  initAppLogger,
+  installMainProcessLogging,
+  tryGetLogger,
+} from "./logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -42,8 +48,11 @@ async function createWindow(): Promise<void> {
     },
   });
 
+  attachWindowLogging(mainWindow);
+
   mainWindow.once("ready-to-show", () => {
     mainWindow?.show();
+    tryGetLogger()?.info("main", "Main window ready", { url: getWebUrl() });
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -62,16 +71,35 @@ async function createWindow(): Promise<void> {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  const paths = getAppPaths();
+  ensureAppDirs(paths);
+  initAppLogger(paths.logs);
+  installMainProcessLogging();
+
+  try {
+    await createWindow();
+  } catch (error) {
+    tryGetLogger()?.error("main", "Failed to create application window", error, "apps/desktop/src/main/index.ts:72");
+    throw error;
+  }
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
+    tryGetLogger()?.info("main", "All windows closed — quitting");
     app.quit();
   }
 });
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createWindow().catch((error) => {
+      tryGetLogger()?.error("main", "Failed to recreate window on activate", error);
+    });
   }
+});
+
+app.on("before-quit", () => {
+  tryGetLogger()?.info("main", "Application shutting down");
 });

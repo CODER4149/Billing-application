@@ -1,5 +1,19 @@
 export interface ElectronApi {
-  app: { getInfo(): Promise<{ version: string; platform: string; paths: Record<string, string> }> };
+  app: {
+    getInfo(): Promise<{ version: string; platform: string; paths: Record<string, string> }>;
+    writeLog(
+      level: "DEBUG" | "INFO" | "WARN" | "ERROR",
+      source: string,
+      message: string,
+      details?: unknown,
+      location?: string
+    ): Promise<{ success: boolean }>;
+  };
+  logs: {
+    getInfo(): Promise<{ folder: string; todayFile: string; retentionDays: number }>;
+    openFolder(): Promise<{ success: boolean; path: string }>;
+    openToday(): Promise<{ success: boolean; path: string }>;
+  };
   auth: { login(username: string, password: string): Promise<{ success: boolean; error?: string; user?: Record<string, unknown> }> };
   dashboard: {
     getKpis(): Promise<Record<string, number>>;

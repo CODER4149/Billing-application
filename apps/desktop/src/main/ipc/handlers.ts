@@ -16,6 +16,7 @@ import {
 } from "@borewell/core";
 import type { BetterSqliteAdapter } from "../database/adapter.js";
 import { getAppPaths } from "../paths.js";
+import { getLogger, registerLogHandlers } from "../logger.js";
 import {
   buildInvoiceExtraFields,
   INVOICE_EXTRA_INSERT_COLS,
@@ -105,10 +106,16 @@ export async function initDatabase(dbAdapter: BetterSqliteAdapter): Promise<void
   if (!result.success) {
     throw new Error(result.message ?? "Database bootstrap failed");
   }
-  console.log(`[database] Ready at ${result.dbPath} — ${result.message}`);
+  getLogger().info("database", `Database ready at ${result.dbPath}`, {
+    message: result.message,
+    migrationsApplied: result.migrationsApplied,
+    seeded: result.seeded,
+  });
 }
 
 export function registerIpcHandlers(): void {
+  registerLogHandlers();
+
   ipcMain.handle("app:getInfo", () => ({
     version: app.getVersion(),
     platform: process.platform,

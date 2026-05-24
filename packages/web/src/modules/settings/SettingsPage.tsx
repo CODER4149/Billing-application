@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Save } from "lucide-react";
+import { Save, FolderOpen, FileText } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
@@ -57,11 +57,13 @@ const SETTING_GROUPS = [
 export function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [logInfo, setLogInfo] = useState<{ folder: string; todayFile: string; retentionDays: number } | null>(null);
   const { user } = useAuthStore();
   const { theme, setTheme } = useThemeStore();
 
   useEffect(() => {
     api.settings.getAll().then(setSettings);
+    api.logs?.getInfo().then(setLogInfo).catch(() => undefined);
   }, []);
 
   const handleSave = async () => {
@@ -101,6 +103,32 @@ export function SettingsPage() {
           ))}
         </CardContent>
       </Card>
+
+      {logInfo && (
+        <Card>
+          <CardHeader><CardTitle>Application Logs</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              Errors and important events are saved to daily log files. Search for{" "}
+              <code className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-xs">{" >>> ERROR <<< "}</code>{" "}
+              to jump to failures. Location lines are clickable in VS Code / Cursor. Logs older than{" "}
+              {logInfo.retentionDays} days are deleted automatically.
+            </p>
+            <div className="space-y-2 text-sm">
+              <div><span className="text-[var(--color-muted-foreground)]">Log folder:</span> {logInfo.folder}</div>
+              <div><span className="text-[var(--color-muted-foreground)]">Today&apos;s file:</span> {logInfo.todayFile}</div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => api.logs?.openToday().then(() => toast.success("Opened today's log file"))}>
+                <FileText className="h-4 w-4" /> Open Today&apos;s Log
+              </Button>
+              <Button variant="outline" onClick={() => api.logs?.openFolder().then(() => toast.success("Opened logs folder"))}>
+                <FolderOpen className="h-4 w-4" /> Open Logs Folder
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {SETTING_GROUPS.map((group) => (
         <Card key={group.title}>

@@ -3,6 +3,18 @@ import { contextBridge, ipcRenderer } from "electron";
 const api = {
   app: {
     getInfo: () => ipcRenderer.invoke("app:getInfo"),
+    writeLog: (
+      level: "DEBUG" | "INFO" | "WARN" | "ERROR",
+      source: string,
+      message: string,
+      details?: unknown,
+      location?: string
+    ) => ipcRenderer.invoke("app:writeLog", level, source, message, details, location),
+  },
+  logs: {
+    getInfo: () => ipcRenderer.invoke("logs:getInfo"),
+    openFolder: () => ipcRenderer.invoke("logs:openFolder"),
+    openToday: () => ipcRenderer.invoke("logs:openToday"),
   },
   auth: {
     login: (username: string, password: string) =>

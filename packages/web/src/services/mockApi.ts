@@ -453,7 +453,19 @@ export function createMockApi(): ApiClient {
   };
 
   return {
-    app: { getInfo: async () => ({ version: "1.0.0", platform: "web", paths: {} }) },
+    app: {
+      getInfo: async () => ({ version: "1.0.0", platform: "web", paths: {} }),
+      writeLog: async () => ({ success: true }),
+    },
+    logs: {
+      getInfo: async () => ({
+        folder: "(desktop only)",
+        todayFile: "(desktop only)",
+        retentionDays: 7,
+      }),
+      openFolder: async () => ({ success: true, path: "" }),
+      openToday: async () => ({ success: true, path: "" }),
+    },
     auth: {
       login: async (username, password) => {
         if (username === "admin" && password === "admin123") {
