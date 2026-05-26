@@ -4,7 +4,8 @@ import { ipcMain, shell, type BrowserWindow } from "electron";
 import { getAppPaths } from "./paths.js";
 
 export const LOG_RETENTION_DAYS = 7;
-const LOG_FILE_PREFIX = "application-";
+export const LOG_FILE_PREFIX = "application-";
+export const LOG_FILE_EXT = ".txt";
 
 export type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
 
@@ -82,6 +83,10 @@ export class AppLogger {
     this.write({ level: "WARN", source, message, details, location });
   }
 
+  debug(source: string, message: string, details?: unknown, location?: string): void {
+    this.write({ level: "DEBUG", source, message, details, location });
+  }
+
   error(source: string, message: string, error?: unknown, location?: string): void {
     this.write({ level: "ERROR", source, message, error, location });
   }
@@ -105,10 +110,13 @@ export class AppLogger {
     let removed = 0;
 
     for (const file of fs.readdirSync(this.logDir)) {
-      if (!file.startsWith(LOG_FILE_PREFIX) || !file.endsWith(".log")) continue;
+      const isLogFile =
+        file.startsWith(LOG_FILE_PREFIX) &&
+        (file.endsWith(LOG_FILE_EXT) || file.endsWith(".log"));
+      if (!isLogFile) continue;
 
       const fullPath = path.join(this.logDir, file);
-      const dateMatch = file.match(/application-(\d{4}-\d{2}-\d{2})\.log/);
+      const dateMatch = file.match(/application-(\d{4}-\d{2}-\d{2})\.(txt|log)/);
       const fileTime = dateMatch
         ? new Date(`${dateMatch[1]}T23:59:59.999Z`).getTime()
         : fs.statSync(fullPath).mtimeMs;
@@ -133,15 +141,15 @@ export class AppLogger {
     if (today === this.currentDate && this.currentFilePath) return;
 
     this.currentDate = today;
-    this.currentFilePath = path.join(this.logDir, `${LOG_FILE_PREFIX}${today}.log`);
+    this.currentFilePath = path.join(this.logDir, `${LOG_FILE_PREFIX}${today}${LOG_FILE_EXT}`);
 
     if (!fs.existsSync(this.currentFilePath)) {
       const header = [
-        "# Borewell ERP Application Log",
-        `# File: ${this.currentFilePath}`,
-        `# Retention: last ${LOG_RETENTION_DAYS} days (older files auto-deleted on startup)`,
-        "# Search for >>> ERROR <<< to jump to failures",
-        "# Location lines use file:line:column — clickable in VS Code / Cursor",
+        "Borewell ERP Application Log",
+        `File: ${this.currentFilePath}`,
+        `Retention: last ${LOG_RETENTION_DAYS} days (older files auto-deleted on startup)`,
+        "Levels: DEBUG, INFO, WARN, ERROR",
+        "Search for >>> ERROR <<< to jump to failures",
         "",
       ].join("\n");
       fs.writeFileSync(this.currentFilePath, header, "utf-8");
@@ -186,6 +194,7 @@ export function initAppLogger(logDir: string): AppLogger {
     logDir,
     retentionDays: LOG_RETENTION_DAYS,
     todayFile: loggerInstance.getTodayLogPath(),
+    exePath: process.execPath,
   });
   return loggerInstance;
 }

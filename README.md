@@ -34,7 +34,19 @@ Billing-application/
 │   ├── database/    # Schema, migrations, bootstrap
 │   ├── core/        # Business logic, GST, validation
 │   └── config/      # Shared TypeScript config
+└── docs/            # Architecture & flow documentation
 ```
+
+## Documentation
+
+Detailed guides with flow charts:
+
+| Guide | Topics |
+|-------|--------|
+| [docs/README.md](docs/README.md) | Monorepo overview, architecture, common flows |
+| [docs/ui.md](docs/ui.md) | React UI — routes, modules, API layer, CRUD patterns |
+| [docs/desktop.md](docs/desktop.md) | Electron — startup, IPC, database, build, logs |
+| [docs/mobile.md](docs/mobile.md) | Capacitor — sync, Android/iOS build workflow |
 
 ## Getting Started
 

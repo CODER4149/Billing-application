@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useAuthStore, applyTheme, useThemeStore } from "@/store";
 import { AppShell } from "@/components/layout/AppShell";
@@ -20,6 +20,11 @@ import { UsersPage } from "@/modules/users/UsersPage";
 import { BackupPage } from "@/modules/backup/BackupPage";
 import { useEffect } from "react";
 
+const Router =
+  typeof window !== "undefined" && window.location.protocol === "file:"
+    ? HashRouter
+    : BrowserRouter;
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -34,7 +39,7 @@ export function App() {
   }, [theme]);
 
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -56,6 +61,6 @@ export function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster richColors position="top-right" />
-    </BrowserRouter>
+    </Router>
   );
 }

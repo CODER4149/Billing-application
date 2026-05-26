@@ -2,7 +2,7 @@ import { app, BrowserWindow, shell, nativeImage } from "electron";
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { ensureAppDirs, getAppPaths, getWebUrl, isDev } from "./paths.js";
+import { ensureAppDirs, getAppPaths, getWebIndexPath, getWebUrl, isDev } from "./paths.js";
 import { BetterSqliteAdapter } from "./database/adapter.js";
 import { initDatabase, registerIpcHandlers } from "./ipc/handlers.js";
 import {
@@ -52,7 +52,9 @@ async function createWindow(): Promise<void> {
 
   mainWindow.once("ready-to-show", () => {
     mainWindow?.show();
-    tryGetLogger()?.info("main", "Main window ready", { url: getWebUrl() });
+    tryGetLogger()?.info("main", "Main window ready", {
+      url: isDev() ? getWebUrl() : getWebIndexPath(),
+    });
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -60,7 +62,15 @@ async function createWindow(): Promise<void> {
     return { action: "deny" };
   });
 
-  await mainWindow.loadURL(getWebUrl());
+  if (isDev()) {
+    await mainWindow.loadURL(getWebUrl());
+  } else {
+    const webIndex = getWebIndexPath();
+    if (!fs.existsSync(webIndex)) {
+      throw new Error(`Web bundle missing: ${webIndex}`);
+    }
+    await mainWindow.loadFile(webIndex);
+  }
 
   if (isDev()) {
     mainWindow.webContents.openDevTools({ mode: "detach" });

@@ -109,10 +109,10 @@ export function SettingsPage() {
           <CardHeader><CardTitle>Application Logs</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-[var(--color-muted-foreground)]">
-              Errors and important events are saved to daily log files. Search for{" "}
+              DEBUG, INFO, WARN, and ERROR logs are saved in the <strong>app_logs</strong> folder next to
+              the application. One <strong>.txt</strong> file is created per day. Search for{" "}
               <code className="rounded bg-[var(--color-accent)] px-1.5 py-0.5 text-xs">{" >>> ERROR <<< "}</code>{" "}
-              to jump to failures. Location lines are clickable in VS Code / Cursor. Logs older than{" "}
-              {logInfo.retentionDays} days are deleted automatically.
+              to jump to failures. Logs older than {logInfo.retentionDays} days are deleted automatically.
             </p>
             <div className="space-y-2 text-sm">
               <div><span className="text-[var(--color-muted-foreground)]">Log folder:</span> {logInfo.folder}</div>
